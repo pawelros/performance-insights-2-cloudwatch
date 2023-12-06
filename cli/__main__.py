@@ -1,8 +1,9 @@
 import typer
+from loguru import logger
 
 
 def main(name: str):
-    print(f"Hello {name}")
+    logger.info(f"Hello {name}")
 
 
 if __name__ == "__main__":
