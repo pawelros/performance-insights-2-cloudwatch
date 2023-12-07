@@ -5,6 +5,7 @@ from typing_extensions import Annotated
 from loguru import logger
 from prometheus_performance_insights_exporter.pi_client import PiClient
 from prometheus_performance_insights_exporter.rds_helper import RdsHelper
+from prometheus_performance_insights_exporter.prometheus_metric import PrometheusMetric
 
 app = typer.Typer()
 
@@ -24,23 +25,30 @@ def get_rds_metrics(
 
     pi_client = PiClient(db_resource_id)
     response = pi_client.get_rds_metrics(
-        [{"Metric": "db.load.avg", "GroupBy": {"Group": "db.user"}}],
+        [{"Metric": "db.load.avg", "GroupBy": {"Group": "db"}}],
         start_time=time.time() - (5 * 60),
         end_time=time.time(),
     )
 
+    logger.debug(response)
+
     result = {}
 
-    for m in response['MetricList']:
-
+    for m in response["MetricList"]:
         if "Dimensions" not in m["Key"].keys():
             continue
 
-        db_user = m["Key"]["Dimensions"]["db.user.name"]
+        db_user = m["Key"]["Dimensions"]["db.name"]
 
         result[db_user] = m["DataPoints"][0]["Value"]
 
     logger.warning(json.dumps(result, indent=4, sort_keys=True, default=str))
+
+    prom_metrics = []
+    for k, v in result.items():
+        prom_metrics.append(str(PrometheusMetric("db_load_avg", {"db_name": k}, v)))
+
+    logger.debug("\n".join(prom_metrics))
 
 
 @app.command()
