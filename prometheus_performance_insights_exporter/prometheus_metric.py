@@ -7,4 +7,4 @@ class PrometheusMetric:
     def __str__(self):
         # metric_name{label="value", another_label="value"} actual_metric_value
         labels_str = ",".join(f'{k}="{v}"' for k, v in self.labels.items())
-        return f"{self.metric_name}={{{labels_str}}} {self.value}"
+        return f"{self.metric_name}{{{labels_str}}} {self.value}"

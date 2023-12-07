@@ -3,7 +3,11 @@ from prometheus_performance_insights_exporter.prometheus_metric import Prometheu
 
 
 class MetricsConverter:
-    def pi_to_prometheus(pi_client_response, labels_to_ignore: List[str] = None):
+    def pi_to_prometheus(
+        pi_client_response,
+        extra_labels: dict = None,
+        labels_to_ignore: List[str] = None,
+    ):
         if not labels_to_ignore:
             labels_to_ignore = []
 
@@ -15,7 +19,7 @@ class MetricsConverter:
             if "Dimensions" not in m["Key"].keys():
                 continue
 
-            labels = {}
+            labels = extra_labels.copy() or {}
 
             for k, v in m["Key"]["Dimensions"].items():
                 key = k.replace(".", "_")
