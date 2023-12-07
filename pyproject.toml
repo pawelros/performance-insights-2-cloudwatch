@@ -1,8 +1,8 @@
 [tool.poetry]
-name = "pi2cw"
+name = "prometheus-performance-insights-exporter"
 version = "0.1.0"
 description = ""
-authors = ["Your Name <you@example.com>"]
+authors = ["Pawel Rosinski <dev.rosiv@gmail.com>"]
 readme = "README.md"
 
 [tool.poetry.dependencies]

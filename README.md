@@ -1,2 +1,2 @@
-# performance-insights-2-cloudwatch
-Ship AWS RDS Performance Insights metrics to CloudWatch from which you can further stream it to Prometheus
+# prometheus-performance-insights-exporter
+Ship AWS RDS Performance Insights metrics to Prometheus exporter
