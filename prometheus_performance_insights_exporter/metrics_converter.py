@@ -1,20 +1,29 @@
+from typing import List
 from prometheus_performance_insights_exporter.prometheus_metric import PrometheusMetric
 
 
 class MetricsConverter:
-    def pi_to_prometheus(pi_client_response):
-        result = {}
+    def pi_to_prometheus(pi_client_response, labels_to_ignore: List[str] = None):
+        if not labels_to_ignore:
+            labels_to_ignore = []
+
+        prom_metrics = []
 
         for m in pi_client_response["MetricList"]:
+            metric_name = m["Key"]["Metric"].replace(".", "_")
+
             if "Dimensions" not in m["Key"].keys():
                 continue
 
-            db_user = m["Key"]["Dimensions"]["db.name"]
+            labels = {}
 
-            result[db_user] = m["DataPoints"][0]["Value"]
+            for k, v in m["Key"]["Dimensions"].items():
+                key = k.replace(".", "_")
+                if key not in labels_to_ignore:
+                    labels[key] = v
 
-        prom_metrics = []
-        for k, v in result.items():
-            prom_metrics.append(str(PrometheusMetric("db_load_avg", {"db_name": k}, v)))
+            prom_metrics.append(
+                str(PrometheusMetric(metric_name, labels, m["DataPoints"][0]["Value"]))
+            )
 
         return prom_metrics
