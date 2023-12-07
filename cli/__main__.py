@@ -1,11 +1,10 @@
 import typer
 import time
-import json
 from typing_extensions import Annotated
 from loguru import logger
 from prometheus_performance_insights_exporter.pi_client import PiClient
 from prometheus_performance_insights_exporter.rds_helper import RdsHelper
-from prometheus_performance_insights_exporter.prometheus_metric import PrometheusMetric
+from prometheus_performance_insights_exporter.metrics_converter import MetricsConverter
 
 app = typer.Typer()
 
@@ -30,25 +29,9 @@ def get_rds_metrics(
         end_time=time.time(),
     )
 
-    logger.debug(response)
+    prometheus_metrics = MetricsConverter.pi_to_prometheus(response)
 
-    result = {}
-
-    for m in response["MetricList"]:
-        if "Dimensions" not in m["Key"].keys():
-            continue
-
-        db_user = m["Key"]["Dimensions"]["db.name"]
-
-        result[db_user] = m["DataPoints"][0]["Value"]
-
-    logger.warning(json.dumps(result, indent=4, sort_keys=True, default=str))
-
-    prom_metrics = []
-    for k, v in result.items():
-        prom_metrics.append(str(PrometheusMetric("db_load_avg", {"db_name": k}, v)))
-
-    logger.debug("\n".join(prom_metrics))
+    logger.debug("\n".join(prometheus_metrics))
 
 
 @app.command()
