@@ -23,7 +23,7 @@ class MetricsConverter:
                     labels[key] = v
 
             prom_metrics.append(
-                str(PrometheusMetric(metric_name, labels, m["DataPoints"][0]["Value"]))
+                PrometheusMetric(metric_name, labels, m["DataPoints"][0]["Value"])
             )
 
         return prom_metrics

@@ -29,16 +29,16 @@ def get_rds_metrics(
         end_time=time.time(),
     )
 
-    import json
+    # import json
 
-    logger.debug(
-        json.dumps(response["MetricList"], indent=4, sort_keys=True, default=str)
-    )
+    # logger.debug(
+    #     json.dumps(response["MetricList"], indent=4, sort_keys=True, default=str)
+    # )
     prometheus_metrics = MetricsConverter.pi_to_prometheus(
         response, labels_to_ignore=["db_id"]
     )
 
-    logger.info("\n".join(prometheus_metrics))
+    logger.info("\n".join(str(m) for m in prometheus_metrics))
 
 
 @app.command()
