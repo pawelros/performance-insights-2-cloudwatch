@@ -15,7 +15,7 @@ async def root(instance_id):
     logger.debug(f"Getting 'DbiResourceId' from instance id {instance_id}.")
     db_resource_id = RdsHelper.get_db_resource_id(instance_id)
     logger.info(f"DbiResourceId for instance id {instance_id} is {db_resource_id}")
-    #
+
     pi_client = PiClient(db_resource_id)
     response = pi_client.get_rds_metrics(
         [{"Metric": "db.load.avg", "GroupBy": {"Group": "db"}}],
